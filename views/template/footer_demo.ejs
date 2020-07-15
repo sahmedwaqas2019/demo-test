@@ -1,0 +1,271 @@
+<script>
+    $(document).ready(function(){
+        getAjax('A',1);
+    })
+
+    function getAjax(param,page){
+        $.get('/ajax', { option: param ,page:page}, function(data) {
+            let html = '';
+            // console.log(data.data);
+            for(let d of data.data){
+                html += '<div class="items">'+
+                    '<p>1</p>'+
+                    '<h6>'+d.item+'</h6>'+
+                '</div>';
+            }
+            $('.list-items').html(html);
+            $('#list-item-id').data('value',data.option);
+            $('#list-item-id').data('pageid',data.current_page);
+
+            if(data.current_page == 1){
+                $('#previous').attr("disabled","disabled");
+                $("#previous").off('click');
+            }
+            else if(data.current_page == 2){    
+                $('#next').attr("disabled","disabled");
+                $("#next").off('click');
+            }
+            
+        });
+    }
+
+    $('body').on('click','#next',function(e){
+        
+        let value = $('#list-item-id').data('value');
+        let pageId = $('#list-item-id').data('pageid');
+        if(parseInt(pageId) >= 2){
+            e.preventDefault();
+            return;
+        }
+        pageId = parseInt(pageId) + 1;
+
+        getAjax(value,pageId);
+    })
+
+    $('body').on('click','#previous',function(e){
+        let value = $('#list-item-id').data('value');
+        let pageId = $('#list-item-id').data('pageid');
+        pageId = parseInt(pageId) - 1;
+        if(parseInt(pageId) < 1){
+            e.preventDefault();
+            return;
+        }
+        getAjax(value,pageId);
+    })
+
+    function changeFunc(value){
+
+        getAjax(value,1);
+
+    }
+
+
+    const $menu = $('.drawer');
+
+    $(document).mouseup(e => {
+        if (!$menu.is(e.target) // if the target of the click isn't the container...
+            &&
+            $menu.has(e.target).length === 0) // ... nor a descendant of the container
+        {
+            $menu.removeClass('drawer-open');
+        }
+    });
+    $('#drawer').click(function () {
+        $menu.toggleClass("drawer-open");
+    });
+</script>
+<style>
+    body {
+        margin: 30px;
+        background: #fff;
+        font-family: sans-serif;
+    }
+
+    .arrows {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        /* margin-left: 65px; */
+    }
+
+    .arrows a:last-child {
+        padding-left: 70px;
+    }
+
+    .arrows a {
+        font-size: 34px;
+        text-align: center;
+        padding-left: 0px;
+        color: #000;
+    }
+
+    .drawer.drawer-open {
+        /* height: 100vh; */
+        margin-left: 20%;
+    }
+
+    #option option {
+        color: #000;
+    }
+
+    #option {
+        color: #000;
+        width: 90%;
+        height: 30px;
+        margin-top: 30px;
+        margin-left: 9px;
+        background-color: #d9d9d9;
+        outline: 0px !important;
+
+    }
+
+    .drawer {
+        width: 15%;
+        margin-left: -20%;
+        position: absolute;
+        height: 100%;
+        -webkit-transition: all .4s;
+        -o-transition: all .4s;
+        transition: all .4s;
+    }
+
+    .row {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        border: 1px solid #8f8f8f;
+        overflow: hidden;
+        position: relative;
+        height: calc(100vh - 60px);
+    }
+
+    .row .row-item:first-child {
+        width: 20%;
+    }
+
+    .row .row-item:last-child {
+        width: 80%;
+        background-color: #e7e6e6;
+    }
+
+    aside {
+        background-color: #bfbfbf;
+        height: 100%;
+        padding-top: 40px;
+        border-right: 1px solid #7f7f7f;
+        border-bottom: 1px solid #7f7f7f;
+    }
+
+    aside a {
+        border: 1px solid #7f7f7f;
+        border-right: 0px solid #7f7f7f;
+        border-left: 0px solid #7f7f7f;
+        color: #000;
+        padding: 28px;
+        text-align: center;
+        display: block;
+        font-size: 22px;
+        text-decoration: none;
+        background-color: #afabab;
+    }
+
+    .list-item {
+        background-color: #e7e6e6;
+        margin: 40px;
+    }
+
+    .list-item .list-items {
+        margin-bottom: 40px;
+    }
+
+    .list-item .list-items:last-child {
+        margin-bottom: 0px;
+    }
+
+    .list-item .list-items .items {
+        border: 1px solid #7f7f7f;
+        background-color: #afabab;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding: 14px;
+        margin-bottom: 40px;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .list-item .items:last-child {
+        margin-bottom: 0;
+    }
+
+    .list-item .items p {
+        border: 0px solid #8f8f8f;
+        margin: 0;
+        border-radius: 50%;
+        padding: 14px 20px;
+        font-size: 24px;
+        color: #000;
+        background-color: #d0cece;
+    }
+
+    .list-item .items h6 {
+        color: #0e0e0e;
+        text-align: center;
+        color: #0e0e0e;
+        text-align: center;
+        display: block;
+        margin: auto;
+        font-size: 22px;
+    }
+
+    @media (max-width: 991px) {
+        .drawer {
+            width: 20%;
+        }
+
+        #option {
+            margin-left: 7px;
+        }
+
+        .row .row-item:last-child {
+            overflow-y: scroll;
+        }
+    }
+
+    @media(max-width: 757px) {
+        .row {
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+        }
+
+        .row .row-item:first-child,
+        .row .row-item:last-child,
+        .drawer {
+            width: 100%;
+        }
+
+        .drawer {
+            margin-left: -100%;
+        }
+
+        .drawer.drawer-open {
+            margin-left: 0%;
+        }
+
+        aside {
+            padding-top: 0;
+        }
+    }
+</style>
+</body>
+
+</html>
